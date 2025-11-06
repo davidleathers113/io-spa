@@ -1,6 +1,7 @@
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import type { IoPayload } from '../schema';
 import FormSection from '../../../components/FormSection';
+import FileInput from '../../../components/FileInput';
 
 interface StepProps {
   register: UseFormRegister<IoPayload>;
@@ -34,6 +35,56 @@ const BillingStep: React.FC<StepProps> = ({ register, errors }) => {
           />
           {errors.invoice_to && <p className="mt-1 text-sm text-red-600">{errors.invoice_to.message}</p>}
         </div>
+        <div>
+          <label htmlFor="po_number" className="block text-sm font-medium text-gray-700">PO Number</label>
+          <input
+            type="text"
+            id="po_number"
+            {...register('po_number')}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="payment_method" className="block text-sm font-medium text-gray-700">Payment Method</label>
+          <select
+            id="payment_method"
+            {...register('payment_method')}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="">Select...</option>
+            <option value="ACH">ACH</option>
+            <option value="Wire">Wire</option>
+            <option value="Credit Card">Credit Card</option>
+          </select>
+        </div>
+        <div className="md:col-span-2">
+          <label htmlFor="remit_notes" className="block text-sm font-medium text-gray-700">Remittance Notes</label>
+          <textarea
+            id="remit_notes"
+            {...register('remit_notes')}
+            rows={3}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <FileInput
+          name="buyer_w9"
+          label="Buyer W‑9 (PDF)"
+          register={register}
+          errors={errors}
+          accept=".pdf,application/pdf"
+          helperText="Upload a single PDF W‑9 (max 10MB)."
+          multiple={false}
+        />
+        <FileInput
+          name="attachments"
+          label="Attachments"
+          register={register}
+          errors={errors}
+          helperText="Optional supporting files. Multiple allowed."
+          multiple
+        />
       </div>
     </FormSection>
   );

@@ -8,9 +8,10 @@ export const Parties = z.object({
   buyer_phone: z.string().optional(),
   buyer_address: z.string().optional(),
   billing_email: z.string().email().optional(),
-  seller_company: z.string().min(2),
-  seller_contact: z.string().min(2),
-  seller_email: z.string().email(),
+  // Seller fields are provided by the initiator's org profile; not edited by buyer.
+  seller_company: z.string().min(2).optional(),
+  seller_contact: z.string().min(2).optional(),
+  seller_email: z.string().email().optional(),
   seller_phone: z.string().optional(),
   seller_address: z.string().optional(),
   seller_notes: z.string().optional(),
@@ -89,6 +90,7 @@ export const IoSchema = z.object({
   // files are handled by <input type="file" /> via multipart/form-data
   buyer_w9: z.any().optional(),
   attachments: z.any().optional(),
+  issuer_role: z.enum(['seller','buyer']).default('seller'),
 }).merge(Parties).merge(Campaign).merge(Pricing).merge(Compliance).merge(Billing).merge(Terms).merge(Signatures);
 
 export type IoPayload = z.infer<typeof IoSchema>;
