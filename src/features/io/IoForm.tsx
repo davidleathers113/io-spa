@@ -186,20 +186,20 @@ const IoForm = () => {
         ) : (
           <>
         {renderStep()}
-        <div className="flex justify-between mt-8 border-t pt-6">
+        <div className="flex justify-between mt-8 border-t pt-6" style={{ borderColor: 'var(--brand-border)' }}>
           {
             currentStep > 0 &&
-            <button type="button" onClick={handlePrev} className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+            <button type="button" onClick={handlePrev} className="btn btn-secondary">
               Previous
             </button>
           }
           {
             currentStep < steps.length - 1 ? (
-              <button type="button" onClick={handleNext} className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ml-auto">
+              <button type="button" onClick={handleNext} className="btn btn-primary ml-auto">
                 Next
               </button>
             ) : (
-              <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 ml-auto">
+              <button type="submit" className="btn btn-primary ml-auto">
                 Submit Insertion Order
               </button>
             )

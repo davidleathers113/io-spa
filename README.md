@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# Insertion Order (IO) App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, single‑initiator insertion order (IO) web app for capturing buyer details, campaign setup, pricing, compliance, billing, terms, and e‑signatures. Built for fast data entry, guard‑railed validation, and clean Netlify Form submissions.
 
-Currently, two official plugins are available:
+### What you can do
+- Complete an IO in guided steps with inline validation
+- Upload a Buyer W‑9 and supporting attachments
+- Capture buyer and seller signatures on canvas
+- Review everything before sending, export JSON, and print a clean copy
+- Submit securely to Netlify Forms (no backend required)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### How it works
+- The Seller/Publisher fields are prefilled from your organization profile and locked. Only Buyer inputs are collected.
+- Autosave keeps your progress locally; you can close and return later.
+- File uploads and signatures are sent using `multipart/form-data` automatically; otherwise submissions use URL‑encoded payloads.
 
-## React Compiler
+### Using the app
+1. Parties: enter Buyer details (company, contact, email, etc.).
+2. Campaign: dates, timezone, call types, sources, and targeting.
+3. Pricing: payout model, rates, caps, KPIs, and notes.
+4. Compliance: toggles (TCPA, recording, scrubbing), proof link, notes.
+5. Billing: cycle, invoice email, PO number, payment method, remittance notes. Upload W‑9 and any attachments.
+6. Terms: effective date, termination, custom terms.
+7. Signatures: sign on canvas for both buyer and seller (or print to sign).
+8. Review & Submit: download a JSON copy, print, then submit.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Export & print
+- Use “Export as JSON” to download the current IO payload.
+- Use “Print” for a print‑optimized layout; controls are hidden in print.
 
-## Expanding the ESLint configuration
+### Privacy
+- Autosave data is stored in your browser’s `localStorage` only.
+- Submissions are sent to Netlify Forms; configure the site to receive entries.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Developer docs
+For local development, configuration (Seller org profile), Netlify setup, and detailed architecture, see the developer guide:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- `./DEVELOPER.md`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### License
+Internal use. Update this section if publishing externally.
