@@ -13,7 +13,7 @@ function App() {
         <IoForm />
       </main>
       <footer className="text-center text-sm text-slate-500 p-6">
-        <p>Powered by EvolveTech Innovations</p>
+        <p>Powered by NextWave Consulting</p>
       </footer>
     </div>
   );

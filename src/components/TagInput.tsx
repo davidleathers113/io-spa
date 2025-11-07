@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Controller, type Control } from 'react-hook-form';
+import { Controller, type Control, type FieldValues } from 'react-hook-form';
 
-type TagInputProps<FormT> = {
-	control: Control<FormT>;
+type TagInputProps<FormT extends FieldValues = FieldValues> = {
+    control: Control<FormT>;
 	name: string;
 	placeholder?: string;
 	helperText?: string;
@@ -28,7 +28,7 @@ export function defaultPhoneSanitizer(raw: string): string | undefined {
 	return undefined;
 }
 
-export default function TagInput<FormT>({
+export default function TagInput<FormT extends FieldValues = FieldValues>({
 	control,
 	name,
 	placeholder,

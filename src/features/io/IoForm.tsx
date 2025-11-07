@@ -4,14 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { IoSchema, type IoPayload } from './schema';
 import useAutosave from '../../hooks/useAutosave';
 import { postToNetlify } from '../../lib/netlify';
-import JsonExportButton from '../../components/JsonExportButton';
 import PrintButton from '../../components/PrintButton';
 import { ORG_SELLER_DEFAULTS, mergeSellerDefaults } from '../../lib/org';
 
 import Stepper from '../../components/Stepper';
 import PartiesStep from './steps/PartiesStep';
 import CampaignStep from './steps/CampaignStep';
-import PricingStep from './steps/PricingStep';
 import ComplianceStep from './steps/ComplianceStep';
 import BillingStep from './steps/BillingStep';
 import TermsStep from './steps/TermsStep';
@@ -20,7 +18,6 @@ import SignaturesStep from './steps/SignaturesStep';
 const steps = [
   'Parties',
   'Campaign',
-  'Pricing',
   'Compliance',
   'Billing',
   'Terms',
@@ -63,8 +60,6 @@ const IoForm = () => {
     ['buyer_company','buyer_contact','buyer_email'],
     // Campaign
     ['campaigns.0.offer_name','campaigns.0.payout_model'],
-    // Pricing
-    [],
     // Compliance
     [],
     // Billing
@@ -82,29 +77,76 @@ const IoForm = () => {
     switch (currentStep) {
       case 0: return <PartiesStep {...props} />;
       case 1: return <CampaignStep {...props} />;
-      case 2: return <PricingStep {...props} />;
-      case 3: return <ComplianceStep {...props} />;
-      case 4: return <BillingStep {...props} />;
-      case 5: return <TermsStep {...props} />;
-      case 6: return <SignaturesStep {...props} />;
-      case 7: {
+      case 2: return <ComplianceStep {...props} />;
+      case 3: return <BillingStep {...props} />;
+      case 4: return <TermsStep {...props} />;
+      case 5: return <SignaturesStep {...props} />;
+      case 6: {
         const data = getValues();
         return (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold">Review</h2>
-            <p className="text-sm text-gray-600">
-              Please review your details below. You can use the Previous button to make changes.
-            </p>
-            <div className="rounded-md border p-4 bg-gray-50 overflow-x-auto">
-              <pre className="text-xs leading-relaxed">
-                {JSON.stringify(data, null, 2)}
-              </pre>
+            <p className="text-sm text-gray-600">Print or save as PDF for your records.</p>
+            <div className="rounded-md border p-4 bg-white">
+              {/* Parties */}
+              <h3 className="text-base font-semibold mb-2">Parties</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div><span className="font-medium">Buyer Company:</span> {data.buyer_company}</div>
+                  <div><span className="font-medium">Buyer Contact:</span> {data.buyer_contact}</div>
+                  <div><span className="font-medium">Buyer Email:</span> {data.buyer_email}</div>
+                </div>
+                <div>
+                  <div><span className="font-medium">Seller Company:</span> {data.seller_company}</div>
+                  <div><span className="font-medium">Seller Contact:</span> {data.seller_contact}</div>
+                  <div><span className="font-medium">Seller Email:</span> {data.seller_email}</div>
+                </div>
+              </div>
+              {/* Campaigns */}
+              <h3 className="text-base font-semibold mt-6 mb-2">Campaigns</h3>
+              <div className="space-y-4">
+                {Array.isArray((data as any).campaigns) && (data as any).campaigns.map((c: any, i: number) => {
+                  const callType = c.call_type_inbound ? 'Inbound' : c.call_type_live ? 'Live Transfer' : '—';
+                  return (
+                    <div key={i} className="border rounded p-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="font-medium">Campaign {i+1}: {c.offer_name || '—'}</div>
+                        <div className="text-slate-600">{c.vertical || '—'}</div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2 text-sm">
+                        <div><span className="font-medium">Call Type:</span> {callType}</div>
+                        <div><span className="font-medium">Dates:</span> {c.start_date || '—'}{c.end_date ? ` → ${c.end_date}` : ''}</div>
+                        <div><span className="font-medium">Timezone:</span> {c.timezone || '—'}</div>
+                        <div className="md:col-span-3"><span className="font-medium">Dest Numbers:</span> {(c.dest_numbers||'').split(',').filter(Boolean).join(', ') || '—'}</div>
+                        <div className="md:col-span-3"><span className="font-medium">Sources:</span> {c.sources_text || '—'}</div>
+                        <div><span className="font-medium">Payout:</span> {c.payout_model || '—'}</div>
+                        {c.price_per_call !== undefined && <div><span className="font-medium">Price/Call:</span> {c.price_per_call}</div>}
+                        {c.qual_seconds !== undefined && <div><span className="font-medium">Buffer (s):</span> {c.qual_seconds}</div>}
+                        {c.cpa_amount !== undefined && <div><span className="font-medium">CPA:</span> {c.cpa_amount}</div>}
+                        {c.revenue_share_pct !== undefined && <div><span className="font-medium">RevShare %:</span> {c.revenue_share_pct}</div>}
+                        {c.retainer_amount !== undefined && <div><span className="font-medium">Retainer:</span> {c.retainer_amount}</div>}
+                        <div><span className="font-medium">Daily Cap:</span> {c.cap_daily ?? 0}</div>
+                        <div><span className="font-medium">Concurrency:</span> {c.cap_concurrency ?? 0}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Billing */}
+              <h3 className="text-base font-semibold mt-6 mb-2">Billing</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                <div><span className="font-medium">Cycle:</span> {data.billing_cycle || '—'}</div>
+                <div><span className="font-medium">Invoice To:</span> {data.invoice_to || '—'}</div>
+                <div><span className="font-medium">PO#:</span> {data.po_number || '—'}</div>
+              </div>
+              {/* Terms */}
+              <h3 className="text-base font-semibold mt-6 mb-2">Terms</h3>
+              <div className="text-sm"><span className="font-medium">Effective Date:</span> {data.effective_date || '—'}</div>
+              {data.custom_terms && (
+                <div className="mt-2 text-sm"><span className="font-medium">Custom Terms:</span> {data.custom_terms}</div>
+              )}
             </div>
             <div className="flex gap-3">
-              <JsonExportButton
-                data={data}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-              />
               <PrintButton className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300" />
             </div>
           </div>
