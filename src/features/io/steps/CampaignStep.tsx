@@ -1,13 +1,16 @@
-import type { Control, UseFormRegister, FieldErrors } from 'react-hook-form';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import type { Control, UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { useFieldArray, Controller, useWatch } from 'react-hook-form';
 import type { IoPayload } from '../schema';
 import FormSection from '../../../components/FormSection';
 import TagInput, { defaultPhoneSanitizer } from '../../../components/TagInput';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface StepProps {
   register: UseFormRegister<IoPayload>;
   errors: FieldErrors<IoPayload>;
   control: Control<IoPayload>;
+  setValue: UseFormSetValue<IoPayload>;
+  watch: UseFormWatch<IoPayload>;
 }
 
 type CampaignCardProps = {
@@ -18,12 +21,17 @@ type CampaignCardProps = {
   errors: FieldErrors<IoPayload>;
   onRemove: () => void;
   canRemove: boolean;
+  setValue: UseFormSetValue<IoPayload>;
+  watch: UseFormWatch<IoPayload>;
 };
 
-const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, register, errors, onRemove, canRemove }) => {
+const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, register, errors, onRemove, canRemove, setValue }) => {
   const model = useWatch({ control, name: `campaigns.${index}.payout_model` as const });
   const capDailyVal = useWatch({ control, name: `campaigns.${index}.cap_daily` as const });
   const capConcVal = useWatch({ control, name: `campaigns.${index}.cap_concurrency` as const });
+  const isInbound = useWatch({ control, name: `campaigns.${index}.call_type_inbound` as const });
+  const isLive = useWatch({ control, name: `campaigns.${index}.call_type_live` as const });
+  const callTypeValue = isInbound ? 'inbound' : isLive ? 'live' : '';
 
   return (
     <div key={fieldId} className="rounded-lg border border-slate-200 p-4">
@@ -44,6 +52,43 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, re
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
                 {(errors as any)?.campaigns?.[index]?.offer_name && <p className="mt-1 text-sm text-red-600">{(errors as any).campaigns[index].offer_name.message}</p>}
+              </div>
+              <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700">Call Type</label>
+                <Controller
+                  control={control}
+                  name={`campaigns.${index}.call_type_ui` as any}
+                  render={({ field }) => (
+                    <div className="mt-1 flex items-center gap-6">
+                      <label className="inline-flex items-center gap-2 text-sm">
+                        <input
+                          type="radio"
+                          name={`campaigns-${index}-calltype`}
+                          checked={callTypeValue === 'inbound'}
+                          onChange={() => {
+                            field.onChange('inbound');
+                            setValue(`campaigns.${index}.call_type_inbound` as any, true);
+                            setValue(`campaigns.${index}.call_type_live` as any, false);
+                          }}
+                        />
+                        Inbound
+                      </label>
+                      <label className="inline-flex items-center gap-2 text-sm">
+                        <input
+                          type="radio"
+                          name={`campaigns-${index}-calltype`}
+                          checked={callTypeValue === 'live'}
+                          onChange={() => {
+                            field.onChange('live');
+                            setValue(`campaigns.${index}.call_type_inbound` as any, false);
+                            setValue(`campaigns.${index}.call_type_live` as any, true);
+                          }}
+                        />
+                        Live Transfer
+                      </label>
+                    </div>
+                  )}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Vertical</label>
@@ -99,17 +144,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, re
                   sanitize={defaultPhoneSanitizer}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">IVR / Routing Notes</label>
-                <input type="text" {...register(`campaigns.${index}.ivr_notes` as const)} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" />
-              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              <div className="space-y-2">
-                <span className="text-sm font-medium text-gray-700">Call Types</span>
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" {...register(`campaigns.${index}.call_type_inbound` as const)} className="h-4 w-4" /> Inbound</label>
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" {...register(`campaigns.${index}.call_type_live` as const)} className="h-4 w-4" /> Live Transfer</label>
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Sources (required)</label>
                 <textarea
@@ -131,14 +167,6 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, re
                     name={`campaigns.${index}.geo_allowed`}
                     placeholder="Add state/region codes, press Enter"
                     helperText="Ex: CA, TX, FL"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Excluded Geo</label>
-                  <TagInput
-                    control={control}
-                    name={`campaigns.${index}.geo_excluded`}
-                    placeholder="Add state/region codes, press Enter"
                   />
                 </div>
                 {/* Daypart removed by request */}
@@ -199,7 +227,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ index, fieldId, control, re
   );
 };
 
-const CampaignStep: React.FC<StepProps> = ({ register, errors, control }) => {
+const CampaignStep: React.FC<StepProps> = ({ register, errors, control, setValue, watch }) => {
   const { fields, append, remove } = useFieldArray({ control, name: 'campaigns' });
 
   return (
@@ -215,6 +243,8 @@ const CampaignStep: React.FC<StepProps> = ({ register, errors, control }) => {
             errors={errors}
             onRemove={() => remove(index)}
             canRemove={fields.length > 1}
+            setValue={setValue}
+            watch={watch}
           />
         ))}
         <div>

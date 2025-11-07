@@ -42,6 +42,7 @@ const IoForm = () => {
     getValues,
     trigger,
     control,
+    setValue,
   } = useForm<IoPayload>({
     // Manually asserted to sidestep resolver/RHF typing friction on defaulted fields
     resolver: zodResolver(IoSchema) as any,
@@ -77,7 +78,7 @@ const IoForm = () => {
   ];
 
   const renderStep = () => {
-    const props = { register, errors, control };
+    const props = { register, errors, control, setValue, watch };
     switch (currentStep) {
       case 0: return <PartiesStep {...props} />;
       case 1: return <CampaignStep {...props} />;
