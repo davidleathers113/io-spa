@@ -30,6 +30,7 @@ const steps = [
 
 const IoForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [testMode, setTestMode] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const {
@@ -40,6 +41,7 @@ const IoForm = () => {
     reset,
     getValues,
     trigger,
+    control,
   } = useForm<IoPayload>({
     // Manually asserted to sidestep resolver/RHF typing friction on defaulted fields
     resolver: zodResolver(IoSchema) as any,
@@ -59,9 +61,9 @@ const IoForm = () => {
     // Parties (buyer only; seller is prefilled from org)
     ['buyer_company','buyer_contact','buyer_email'],
     // Campaign
-    ['offer_name','vertical','start_date'],
+    ['campaigns.0.offer_name','campaigns.0.payout_model'],
     // Pricing
-    ['payout_model','price_per_call','qual_seconds'],
+    [],
     // Compliance
     [],
     // Billing
@@ -75,7 +77,7 @@ const IoForm = () => {
   ];
 
   const renderStep = () => {
-    const props = { register, errors };
+    const props = { register, errors, control };
     switch (currentStep) {
       case 0: return <PartiesStep {...props} />;
       case 1: return <CampaignStep {...props} />;
@@ -112,6 +114,10 @@ const IoForm = () => {
   };
 
   const handleNext = async () => {
+    if (testMode) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+      return;
+    }
     // Manually gate by step-specific fields to improve UX.
     const fields = stepFieldNames[currentStep] ?? [];
     if (fields.length === 0) {
@@ -165,7 +171,19 @@ const IoForm = () => {
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-xl max-w-4xl mx-auto">
-      <Stepper steps={steps} currentStep={currentStep} />
+      <div className="flex items-start justify-between">
+        <Stepper steps={steps} currentStep={currentStep} />
+        <label className="ml-4 inline-flex items-center gap-2 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={testMode}
+            onChange={(e) => setTestMode(e.target.checked)}
+            className="h-4 w-4"
+            aria-label="Enable test mode to skip step validation"
+          />
+          Test mode (skip validation)
+        </label>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8" data-netlify="true" data-netlify-honeypot="bot-field" name="io-form">
         {/* Error summary region for a11y */}
         <div role="status" aria-live="polite" className="sr-only">

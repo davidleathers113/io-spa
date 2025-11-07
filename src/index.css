@@ -1,58 +1,82 @@
 @import "tailwindcss";
 
-/* Brand tokens (NextWave-inspired): sapphire blues and clean slates */
+/* Brand tokens (NextWave-inspired): purple-forward with pink accent */
+
 :root {
-	--brand-bg-start: #f0f7ff;   /* sky-50 */
-	--brand-bg-end: #ffffff;
-	--brand-primary-700: #0369a1; /* sky-700 */
-	--brand-primary-600: #0284c7; /* sky-600 */
-	--brand-primary-500: #0ea5e9; /* sky-500 */
-	--brand-ring: var(--brand-primary-500);
-	--brand-on-primary: #ffffff;
-	--brand-muted: #64748b;      /* slate-500 */
-	--brand-border: #e2e8f0;     /* slate-200 */
-	--brand-focus-shadow: 0 0 0 3px rgb(14 165 233 / 0.35);
+    --brand-bg-start: #f5f0ff;
+    /* soft lavender */
+    --brand-bg-end: #ffffff;
+    --brand-primary-700: #5c59bc;
+    /* provided */
+    --brand-primary-600: #5e54ba;
+    /* provided (primary) */
+    --brand-primary-500: #6b61c8;
+    /* derived mid */
+    --brand-accent-500: #de89d3;
+    /* provided (pink) */
+    --brand-accent-600: #b82d5c;
+    /* provided (raspberry) */
+    --brand-ring: var(--brand-primary-500);
+    --brand-on-primary: #ffffff;
+    --brand-muted: #64748b;
+    /* slate-500 */
+    --brand-border: #e2e8f0;
+    /* slate-200 */
+    --brand-focus-shadow: 0 0 0 3px rgb(94 84 186 / 0.35);
 }
+
 
 /* Reset template-specific overrides and keep Tailwind utilities primary */
+
 body {
-	margin: 0;
-	min-width: 320px;
-	min-height: 100vh;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
 }
+
 
 /* Buttons */
+
 .btn {
-	@apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium transition-colors;
-}
-.btn-primary {
-	background: var(--brand-primary-600);
-	color: var(--brand-on-primary);
-}
-.btn-primary:hover {
-	background: var(--brand-primary-700);
-}
-.btn-primary:focus-visible {
-	box-shadow: var(--brand-focus-shadow);
-	outline: none;
-}
-.btn-primary:disabled {
-	opacity: .45;
-	cursor: not-allowed;
-}
-.btn-secondary {
-	@apply bg-white text-slate-800 border border-slate-300;
-}
-.btn-secondary:hover {
-	@apply bg-slate-50;
-}
-.btn-secondary:focus-visible {
-	box-shadow: 0 0 0 3px rgb(226 232 240 / 0.9);
-	outline: none;
+    @apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium transition-colors;
 }
 
+.btn-primary {
+    background-image: linear-gradient(90deg, var(--brand-primary-600) 0%, var(--brand-accent-500) 100%);
+    color: var(--brand-on-primary);
+}
+
+.btn-primary:hover {
+    background-image: linear-gradient(90deg, var(--brand-primary-700) 0%, var(--brand-accent-600) 100%);
+}
+
+.btn-primary:focus-visible {
+    box-shadow: var(--brand-focus-shadow);
+    outline: none;
+}
+
+.btn-primary:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    @apply bg-white text-slate-800 border border-slate-300;
+}
+
+.btn-secondary:hover {
+    @apply bg-slate-50;
+}
+
+.btn-secondary:focus-visible {
+    box-shadow: 0 0 0 3px rgb(226 232 240 / 0.9);
+    outline: none;
+}
+
+
 /* Form section headings */
+
 .section-title {
-	@apply text-xl font-semibold border-b pb-2 mb-4;
-	border-color: var(--brand-border);
+    @apply text-xl font-semibold border-b pb-2 mb-4;
+    border-color: var(--brand-border);
 }

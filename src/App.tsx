@@ -3,8 +3,8 @@ import IoForm from './features/io/IoForm';
 
 function App() {
   return (
-    <div className="min-h-screen font-sans text-slate-800 bg-gradient-to-b from-[var(--brand-bg-start)] to-[var(--brand-bg-end)] antialiased">
-      <header className="sticky top-0 z-10 bg-white/80 supports-[backdrop-filter]:bg-white/60 backdrop-blur border-b border-[var(--brand-border)] p-4">
+    <div className="min-h-screen font-sans text-slate-800 bg-linear-to-b from-(--brand-bg-start) to-(--brand-bg-end) antialiased">
+      <header className="sticky top-0 z-10 bg-white/80 supports-backdrop-filter:bg-white/60 backdrop-blur border-b border-(--brand-border) p-4">
         <div className="container mx-auto">
           <h1 className="text-2xl font-bold text-slate-900">Insertion Order</h1>
         </div>
